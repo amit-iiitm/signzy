@@ -173,6 +173,7 @@ def locate_name(im):
   plt.show()
   #plot the edges against line no. to get a feel of peaks observed 
   #get the strip of name of person using geometrical analysis we observe that for a size 0f 240 vector the row containing name is after the 55th row
+  #for locating the date of birth we need to change this threshold to 100
   start=0
   end=0
   for i in range(55,imh):
@@ -185,13 +186,12 @@ def locate_name(im):
 	break;
   print "printing the borders of the name"
   print start, end
-  box=(10,start,150,end)
+  box=(10,start-2,150,end+2)
   im=im.crop(box)
   #im=im.resize((100,20),Image.ANTIALIAS)
   im.save('name_extracted.jpg')
   im.show()
 #locate_name(Image.open('Image2_cropped.jpg'))
-
 
 
 #locate_name gives the strip containing the name of person now i need to perform a connected component approach to get the individual characters in a single frame for recognition
@@ -212,6 +212,7 @@ def find_char(x,y,pix,col,im):
    imw=im.size[0]
    imh=im.size[1]
    box = (max(0,lf),max(0, up), min(imw,rt), min(imh,dn))
+   #box = (max(0,lf),max(0,0), min(imw,rt), min(imh,imh))
    imnw=im.crop(box)
    #if imw*0.1 >rt-lf>10 and  imh*0.9>dn-up>20:
    imnw.show()
@@ -270,7 +271,7 @@ def segment_char(im):
        if pix[j,m]==0 and col[j,m]==0 :
               imlist.append(find_char(j,m,pix,col,im))
               
-  i="segment"
+  i="name_segment"
   j=0
   for pic in imlist:
        dest=str(i)+"/"
@@ -283,4 +284,8 @@ def segment_char(im):
        j+=1
 segment_char(Image.open('name_extracted.jpg'))
 
-#connected component approach fails to give good results so i am using the no. of white pixels in any column as the """
+#till now got the segmented image of individual characters"""
+
+
+#For the recognition of individual characters i tried tresseract but it failed after that tried another method using knn classifier with data from uci repository containing the label of images and their 14 features Training is done on that dataset but for our images we need to extract features from the character image which i cant do because of lack of time. Future scope includes extracting these features and then classifying them using knn or svm classifier. The details of features are specified in opencv_knn.py file
+
